@@ -1,0 +1,18 @@
+<table>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Created At</th>
+      <th>Test String</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each results}}
+      <tr>
+        <td>{{this.id}}</td>
+        <td>{{this.createdAt}}</td>
+        <td>{{this.testString}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

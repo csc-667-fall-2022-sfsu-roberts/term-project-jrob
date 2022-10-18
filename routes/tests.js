@@ -7,7 +7,7 @@ router.get("/", (request, response) => {
     `INSERT INTO test_table ("testString") VALUES ('Hello at ${Date.now()}')`
   )
     .then((_) => db.any(`SELECT * FROM test_table`))
-    .then((results) => response.json(results))
+    .then((results) => response.render("tests.hbs", { results }))
     .catch((error) => {
       console.log(error);
       response.json({ error });

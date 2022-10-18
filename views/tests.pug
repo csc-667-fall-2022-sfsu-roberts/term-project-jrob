@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  table
+    thead
+      tr
+        th Id
+        th Created At
+        th Test String
+    tbody
+      each result in results
+        tr
+          td= result.id
+          td= result.createdAt
+          td= result.testString
+
+block footer
+  p John Roberts
