@@ -6,3 +6,46 @@ body {
 a {
   color: #00B7FF;
 }
+
+.player-hand {
+  position: relative;
+}
+
+.card {
+  background-image: url("/images/cards.png");
+  height: 258px;
+  width: 176px;
+  position: absolute;
+}
+
+.card ~ .card {
+  left: 25px;
+}
+
+.card ~ .card ~ .card {
+  left: 25px;
+}
+
+.five {
+  background-position-x: -1000px;
+}
+
+.eight {
+  background-position-x: -1600px;
+}
+
+.blue {
+  background-position-y: -285px;
+}
+
+.red {
+  background-position-y: 0px;
+}
+
+.yellow {
+  background-position-y: -570px;
+}
+
+.green {
+  background-position-y: -855px;
+}
