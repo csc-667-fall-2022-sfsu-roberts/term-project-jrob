@@ -2,9 +2,13 @@ extends layout
 
 block content
   h1 Index page (Public)
+  if username
+    h2 Welcome #{username} (#{sessionID})
 
   ul
     li
       a(href="/games/42") Games
     li
-      a(href="/signup") Signup
+      a(href="/auth/register") Register
+    li
+      a(href="/auth/login") Login

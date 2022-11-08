@@ -1,16 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/", function (request, response) {
-  response.render("public/index");
-});
+router.get("/", (request, response) => {
+  const { sessionID } = request;
+  const { username } = request.session;
 
-router.get("/login", function (request, response) {
-  response.render("public/login");
-});
+  console.log({ username });
 
-router.get("/signup", function (request, response) {
-  response.render("public/signup");
+  response.render("public/index", { username, sessionID });
 });
 
 module.exports = router;

@@ -1,9 +1,9 @@
 extends layout
 
 block content
-  h1 Login page
+  h1 Register page
 
-  form(action="/auth/login" method="post")
+  form(action="/auth/register" method="post")
     div
       label(for="username")
       input(type="text" name="username")
@@ -13,4 +13,4 @@ block content
       input(type="password" name="password")
 
     div
-      input(type="submit" value="Login")
+      input(type="submit" value="Register")
