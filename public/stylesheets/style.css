@@ -11,11 +11,14 @@ a {
   position: relative;
 }
 
+:root{ --scale_factor: 8; }
+
 .card {
   background-image: url("/images/cards.png");
-  height: 258px;
-  width: 176px;
+  height: calc(258px / var(--scale_factor));
+  width: calc(176px  / var(--scale_factor));
   position: absolute;
+  background-size: calc(2572px  / var(--scale_factor)) calc(1397px  / var(--scale_factor));
 }
 
 .card ~ .card {
@@ -27,15 +30,15 @@ a {
 }
 
 .five {
-  background-position-x: -1000px;
+  background-position-x: calc(-1000px  / var(--scale_factor));
 }
 
 .eight {
-  background-position-x: -1600px;
+  background-position-x: calc(-1600px  / var(--scale_factor));
 }
 
 .blue {
-  background-position-y: -285px;
+  background-position-y: calc( -285px  / var(--scale_factor));
 }
 
 .red {
@@ -43,9 +46,9 @@ a {
 }
 
 .yellow {
-  background-position-y: -570px;
+  background-position-y: calc(-570px  / var(--scale_factor));
 }
 
 .green {
-  background-position-y: -855px;
+  background-position-y: calc(-855px / var(--scale_factor));
 }
