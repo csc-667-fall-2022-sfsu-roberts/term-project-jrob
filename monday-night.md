@@ -5,7 +5,7 @@
    [X] integrating with the db (registering and authing)
    [X] encrypting passwords
 2. Socket IO
-   1. express-session
+   [X] express-session
 3. Set up basic chat application
    1. post `chat/:id` { message }
    2. listen for messages and update UI
