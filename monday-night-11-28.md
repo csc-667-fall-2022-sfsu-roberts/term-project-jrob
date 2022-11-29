@@ -11,7 +11,3 @@ Task list:
 - [x] Button in lobby to create an instance
 - [x] Redirect to the new game
 - [x] Game list in lobby
-
-[] Some game logic
-
-- [] Turns? When a game is won or lost?

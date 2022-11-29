@@ -33,4 +33,27 @@ router.post("/:id/join", (request, response) => {
     });
 });
 
+router.post("/:id/play", (request, response) => {
+  const { userId } = request.session;
+  const { id } = request.params;
+
+  // Check that the user is in the game
+  // If not, ignore
+
+  // Check that its the users turn
+  // If not, ignore
+
+  // Check the card that is being played is held by the user
+  // If not, broadcast an error to user
+
+  // Check the card that is being played is a valid play
+  // If not, broadcast an error to user
+
+  // If all of that is true, update game state and broadcast
+  // Remove the card from user's hand
+  // Add card to discard pile
+  // Change current user
+  // Broadcast game state
+});
+
 module.exports = router;
