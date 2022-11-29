@@ -1,16 +1,16 @@
 Task list:
-[] Migrations
+[X] Migrations
 
-- [] Games
-- [] Game Users
-- [] Cards
-- [] Game Cards
+- [x] Games
+- [x] Game Users
+- [x] Cards
+- [x] Game Cards
 
-[] Create game instance
+[X] Create game instance
 
-- [] Button in lobby to create an instance
-- [] Redirect to the new game
-- [] Game list in lobby
+- [x] Button in lobby to create an instance
+- [x] Redirect to the new game
+- [x] Game list in lobby
 
 [] Some game logic
 

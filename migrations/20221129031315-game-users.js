@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("game-users", {
+    await queryInterface.createTable("game_users", {
       game_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -15,6 +15,7 @@ module.exports = {
       seat: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        defaultValue: 0,
       },
       current: {
         type: Sequelize.BOOLEAN,
@@ -25,6 +26,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("game-users");
+    await queryInterface.dropTable("game_users");
   },
 };

@@ -27,6 +27,7 @@ const login = ({ username, password }) => {
       ])
     )
     .then(([result, { id, username }]) => {
+      console.log(result, { id, username });
       if (result) {
         return { id, username };
       } else {

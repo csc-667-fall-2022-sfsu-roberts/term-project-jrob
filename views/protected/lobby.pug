@@ -5,6 +5,19 @@ block content
   if username
     h2 Welcome #{username} (#{userId})
 
+  #games-list
+    ul
+      each game in games
+        li
+          span= game.title
+          form(action=`/api/games/${game.id}/join` method="post")
+            button Join game
+
+    form(action="/api/games/create" method="post")
+      label(for="title") Title (optional):
+      input#title(type="text" name="title")
+      button#create-game Create a new game
+
   template#message
     span.sender
     span.content
@@ -17,4 +30,6 @@ block content
 
 block footer
   script(src="/socket.io/socket.io.js")
+  script(src="/javascripts/setup.js")
   script(src="/javascripts/chat.js")
+  script(src="/javascripts/game-management.js")
