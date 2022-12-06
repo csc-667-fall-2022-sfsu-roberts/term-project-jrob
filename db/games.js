@@ -8,7 +8,13 @@ const CHECK_USER_IN_GAME_SQL =
 const ADD_USER_SQL =
   "INSERT INTO game_users (game_id, user_id) VALUES (${game_id}, ${user_id}) RETURNING game_id";
 
-const LIST_SQL = "SELECT * FROM games";
+const ACTIVE_GAMES =
+  "SELECT id, title FROM games LEFT JOIN game_users ON games.id = game_users.game_id WHERE game_users.user_id=${user_id}";
+
+const JOINABLE_GAMES =
+  "SELECT * FROM games WHERE id NOT IN (" +
+  "SELECT id FROM games LEFT JOIN game_users ON games.id = game_users.game_id WHERE game_users.user_id=${user_id}" +
+  ")";
 
 const create = (user_id, title = "") => {
   return db
@@ -22,10 +28,13 @@ const addUser = (user_id, game_id) => {
     .then(() => db.one(ADD_USER_SQL, { user_id, game_id }));
 };
 
-const all = () => {
-  return db.any(LIST_SQL).then((games) => {
-    return games;
-  });
-};
+const active = (user_id) => db.any(ACTIVE_GAMES, { user_id });
+
+const joinable = (user_id) => db.any(JOINABLE_GAMES, { user_id });
+
+const all = (user_id) =>
+  Promise.all([active(user_id), joinable(user_id)]).then(
+    ([active, joinable]) => ({ active, joinable })
+  );
 
 module.exports = { create, all, addUser };

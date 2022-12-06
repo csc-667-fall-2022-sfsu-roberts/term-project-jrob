@@ -6,8 +6,9 @@ const router = express.Router();
 router.get("/", (request, response) => {
   const { username, userId } = request.session;
 
-  Games.all()
+  Games.all(userId)
     .then((games) => {
+      console.log(games);
       response.render("protected/lobby", { username, userId, games });
     })
     .catch((error) => {

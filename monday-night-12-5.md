@@ -1,7 +1,7 @@
-[] Lobby games list
+[X] Lobby games list
 
-- [] active
-- [] joinable
+- [x] active
+- [x] joinable
 
 [] Additional game logic
 

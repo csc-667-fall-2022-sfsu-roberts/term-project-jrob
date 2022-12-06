@@ -6,12 +6,19 @@ block content
     h2 Welcome #{username} (#{userId})
 
   #games-list
+    h3 Joinable Games
     ul
-      each game in games
+      each game in games.joinable
         li
           span= game.title
-          form(action=`/api/games/${game.id}/join` method="post")
+          form(action=`/api/games/${game.id}/join` method="post" target="_blank")
             button Join game
+
+    h3 Active Games
+    ul
+      each game in games.active
+        li
+          a(href=`/games/${game.id}` target="_blank")= game.title
 
     form(action="/api/games/create" method="post")
       label(for="title") Title (optional):
