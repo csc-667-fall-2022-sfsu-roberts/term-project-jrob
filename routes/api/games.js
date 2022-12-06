@@ -24,8 +24,14 @@ router.post("/:id/join", (request, response) => {
   const { userId } = request.session;
   const { id } = request.params;
 
+  console.log("joining game", { userId, gameId: id });
   Games.addUser(userId, id)
-    .then(() => {
+    .then(() => Games.userCount(id))
+    .then(({ count }) => {
+      request.app.io.emit(`game:${id}:player-joined`, {
+        count: parseInt(count),
+        required_count: 2,
+      });
       response.redirect(`/games/${id}`);
     })
     .catch((error) => {

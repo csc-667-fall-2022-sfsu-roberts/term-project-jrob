@@ -1,10 +1,16 @@
 extends layout
 
 block content
-  h1 Game page #{id}
+  h1 Game page #{id} (#{title})
 
-  .player-hand
-    .card.eight.blue
-    .card.five.red
-    .card.five.green
-    .card.eight.yellow
+  p Waiting on users (#[span.current-count #{count}] of #[span.required-count #{required_count}])
+
+  #game-table
+    .player-hand
+      .card.eight.blue
+      .card.five.red
+      .card.five.green
+      .card.eight.yellow
+
+block footer
+  script(src="/javascripts/games/join.js")
