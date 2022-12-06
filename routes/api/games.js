@@ -24,7 +24,6 @@ router.post("/:id/join", (request, response) => {
   const { userId } = request.session;
   const { id } = request.params;
 
-  console.log("joining game", { userId, gameId: id });
   Games.addUser(userId, id)
     .then(() => Games.userCount(id))
     .then(({ count }) => {

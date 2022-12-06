@@ -14,7 +14,6 @@ router.get("/:id", (request, response) => {
   const { id } = request.params;
 
   Promise.all([Games.userCount(id), Games.info(id)])
-
     .then(([{ count }, { title }]) => {
       console.log(count);
       response.render("protected/game", {
@@ -22,6 +21,7 @@ router.get("/:id", (request, response) => {
         title,
         count,
         required_count: 2,
+        ready: parseInt(count) === 2,
       });
     })
     .catch((error) => {

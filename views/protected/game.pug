@@ -3,9 +3,9 @@ extends layout
 block content
   h1 Game page #{id} (#{title})
 
-  p Waiting on users (#[span.current-count #{count}] of #[span.required-count #{required_count}])
+  p#waiting(class=`${ready ? "hidden" : ""}`) Waiting on users (#[span.current-count #{count}] of #[span.required-count #{required_count}])
 
-  #game-table
+  #game-table(class=`${ready ? "" : "hidden"}`)
     .player-hand
       .card.eight.blue
       .card.five.red
