@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Games = require("../../db/games");
+const GameLogic = require("../../game-logic");
 
 router.post("/create", (request, response) => {
   const { userId } = request.session;
@@ -59,6 +60,9 @@ router.post("/:id/play", (request, response) => {
   // Add card to discard pile
   // Change current user
   // Broadcast game state
+  GameLogic.status(game_id).then((data) =>
+    request.app.io.emit(`game:${game_id}:update`, data)
+  );
 });
 
 module.exports = router;

@@ -12,4 +12,11 @@ fetch(window.location.pathname, { method: "post" })
         document.querySelector("#game-table").classList.remove("hidden");
       }
     });
+
+    socket.on(`game:${game_id}:update`, (data) => {
+      console.log("Game update", data);
+    });
+  })
+  .then(() => {
+    fetch(window.location.pathname, { method: "head" });
   });

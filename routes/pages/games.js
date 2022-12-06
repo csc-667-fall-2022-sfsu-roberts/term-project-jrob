@@ -2,6 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 const Games = require("../../db/games");
+const GameLogic = require("../../game-logic");
 
 router.post("/:id", (request, response) => {
   const { id: game_id } = request.params;
@@ -10,12 +11,21 @@ router.post("/:id", (request, response) => {
   response.json({ game_id, user_id });
 });
 
+router.head("/:id", (request, response) => {
+  const { id: game_id } = request.params;
+
+  GameLogic.status(game_id).then((data) =>
+    request.app.io.emit(`game:${game_id}:update`, data)
+  );
+
+  response.status(200).send();
+});
+
 router.get("/:id", (request, response) => {
   const { id } = request.params;
 
   Promise.all([Games.userCount(id), Games.info(id)])
     .then(([{ count }, { title }]) => {
-      console.log(count);
       response.render("protected/game", {
         id,
         title,
