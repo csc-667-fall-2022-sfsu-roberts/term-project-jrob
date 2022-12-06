@@ -8,7 +8,6 @@ router.get("/", (request, response) => {
 
   Games.all()
     .then((games) => {
-      console.log({ games });
       response.render("protected/lobby", { username, userId, games });
     })
     .catch((error) => {

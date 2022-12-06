@@ -1,3 +1,8 @@
+[] Lobby games list
+
+- [] active
+- [] joinable
+
 [] Additional game logic
 
 - [] When enough users have joined a game, create the game (shuffle and assign cards, initialize discard pile), broadcast game ready
