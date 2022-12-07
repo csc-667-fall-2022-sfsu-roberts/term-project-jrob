@@ -11,12 +11,10 @@ router.post("/:id", (request, response) => {
   response.json({ game_id, user_id });
 });
 
-router.head("/:id", (request, response) => {
+router.post("/:id/status", (request, response) => {
   const { id: game_id } = request.params;
 
-  GameLogic.status(game_id).then((data) =>
-    request.app.io.emit(`game:${game_id}:update`, data)
-  );
+  GameLogic.status(game_id, request.app.io);
 
   response.status(200).send();
 });

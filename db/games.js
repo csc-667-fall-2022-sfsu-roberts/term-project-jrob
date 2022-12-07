@@ -45,4 +45,98 @@ const all = (user_id) =>
 const info = (game_id) => db.one(GAME_INFO, { game_id });
 const userCount = (game_id) => db.one(COUNT_USERS_IN_GAME, { game_id });
 
-module.exports = { create, all, addUser, userCount, info };
+const GET_PLAYERS =
+  "SELECT users.id, users.username, game_users.seat, game_users.current, (SELECT COUNT(*)::int FROM game_cards WHERE game_id=${game_id} AND user_id=users.id) as card_count FROM users, game_users WHERE game_users.game_id=${game_id} AND users.id=game_users.user_id";
+
+const getPlayers = (game_id) => db.any(GET_PLAYERS, { game_id });
+
+const shuffle = (array) => {
+  let currentIndex = array.length,
+    randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+  }
+
+  return array;
+};
+
+const getCanonicalCards = () => db.any("SELECT * FROM cards");
+const insertCard = (game_id, card_id) =>
+  db.one(
+    "INSERT INTO game_cards (game_id, card_id, user_id) VALUES (${game_id}, ${card_id}, 0) RETURNING *",
+    { game_id, card_id }
+  );
+const discardCard = (game_id, card_id) =>
+  db.none(
+    "UPDATE game_cards SET user_id=-1 WHERE game_id=${game_id} AND card_id=${card_id}",
+    { game_id, card_id }
+  );
+
+const initDeck = (game_id) =>
+  getCanonicalCards()
+    .then((cards) => shuffle(cards))
+    .then((cards) => {
+      return Promise.all(cards.map(({ id }) => insertCard(game_id, id)));
+    })
+    .then((game_cards) => {
+      return Promise.all([
+        game_cards,
+        discardCard(game_id, game_cards[0].card_id),
+      ]);
+    })
+    .then(([game_cards]) => game_cards);
+
+const getNextDrawableCards = (game_id, limit) =>
+  db.any(
+    "SELECT * FROM game_cards WHERE game_id=${game_id} AND user_id=0 LIMIT ${limit}",
+    { game_id, limit }
+  );
+
+const assignCard = (data) =>
+  db.none(
+    "UPDATE game_cards SET user_id=${user_id} WHERE card_id=${card_id} AND game_id=${game_id}",
+    data
+  );
+
+const setPlayerSeat = (game_id, user_id, seat) =>
+  db.any(
+    "UPDATE game_users SET seat=${seat}, current=${current} WHERE game_id=${game_id} AND user_id=${user_id}",
+    { seat, current: seat === 0, game_id, user_id }
+  );
+
+const getPlayerHand = (game_id, user_id) =>
+  db.any(
+    "SELECT * FROM game_cards, cards WHERE game_cards.user_id=${user_id} AND game_cards.game_id=${game_id} AND cards.id=game_cards.card_id",
+    { game_id, user_id }
+  );
+
+const getCurrentDiscard = (game_id) =>
+  db.one(
+    "SELECT * FROM game_cards, cards WHERE game_cards.user_id=-1 AND game_id=${game_id} AND cards.id=game_cards.card_id",
+    { game_id }
+  );
+
+module.exports = {
+  create,
+  all,
+  addUser,
+  userCount,
+  info,
+  getPlayers,
+  initDeck,
+  getNextDrawableCards,
+  assignCard,
+  setPlayerSeat,
+  getPlayerHand,
+  getCurrentDiscard,
+};

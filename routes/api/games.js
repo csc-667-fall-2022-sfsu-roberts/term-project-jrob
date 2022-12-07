@@ -32,6 +32,13 @@ router.post("/:id/join", (request, response) => {
         count: parseInt(count),
         required_count: 2,
       });
+
+      if (parseInt(count) === 2) {
+        GameLogic.initialize(id).then(() =>
+          GameLogic.status(id, request.app.io)
+        );
+      }
+
       response.redirect(`/games/${id}`);
     })
     .catch((error) => {
@@ -42,6 +49,7 @@ router.post("/:id/join", (request, response) => {
 router.post("/:id/play", (request, response) => {
   const { userId } = request.session;
   const { id } = request.params;
+  const { card_id } = request.body;
 
   // Check that the user is in the game
   // If not, ignore
@@ -60,9 +68,7 @@ router.post("/:id/play", (request, response) => {
   // Add card to discard pile
   // Change current user
   // Broadcast game state
-  GameLogic.status(game_id).then((data) =>
-    request.app.io.emit(`game:${game_id}:update`, data)
-  );
+  GameLogic.status(game_id, request.app.io);
 });
 
 module.exports = router;
