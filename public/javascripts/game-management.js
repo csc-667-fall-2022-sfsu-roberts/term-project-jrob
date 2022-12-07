@@ -7,7 +7,7 @@ socket.on("game:created", ({ game_id, title }) => {
   span.innerText = title;
 
   const form = document.createElement("form");
-  form.action = `/api/games/${game_id}/join`;
+  form.action = `/games/${game_id}/join`;
   form.method = "post";
 
   const button = document.createElement("button");

@@ -1,20 +1,23 @@
 const table = document.querySelector("#game-table");
 const discard = document.querySelector("#discard");
+const drawPile = document.querySelector(".draw-pile .card.special");
 
-const updateDiscard = (card) => {
+const updateDiscard = (
+  { id, type, color } = { id: -1, type: 0, color: "special" }
+) => {
   const div = document.createElement("div");
-  div.classList.add("card", `card-${card.type}`, `${card.color}`);
-  div.dataset.cardId = card.id;
+  div.classList.add("card", `card-${type}`, `${color}`);
+  div.dataset.cardId = id;
 
   discard.replaceChildren(div);
 };
 
 const getPlayerDiv = (seat, username, avatar, playerSeat, totalPlayers) => {
-  const div = document.querySelector(`#players player-${seat}`);
+  const div = table.querySelector(`.player-${seat}`);
 
   if (div === null) {
     const container = document.createElement("div");
-    container.classList.add("player");
+    container.classList.add("player", `player-${seat}`);
 
     if (playerSeat === seat) {
       container.classList.add("player-current");
@@ -45,7 +48,14 @@ const getPlayerDiv = (seat, username, avatar, playerSeat, totalPlayers) => {
   }
 };
 
-const getPlayerCardDiv = (seat, username, avatar, playerSeat, totalPlayers) => {
+const getPlayerCardDiv = (
+  seat,
+  username,
+  avatar,
+  playerSeat,
+  totalPlayers,
+  current
+) => {
   const container = getPlayerDiv(
     seat,
     username,
@@ -54,13 +64,23 @@ const getPlayerCardDiv = (seat, username, avatar, playerSeat, totalPlayers) => {
     totalPlayers
   );
 
+  if (current) {
+    container.classList.add("player-taking-turn");
+  } else if (container.classList.contains("player-taking-turn")) {
+    container.classList.remove("player-taking-turn");
+  }
+
   return container.querySelector(".hand");
+};
+
+const handleDraw = () => {
+  fetch(`${window.location.pathname}/draw`, { method: "post" });
 };
 
 const updatePlayer = (
   player_id,
   player_seat,
-  { id, username, avatar, seat, card_count },
+  { id, username, avatar, current, seat, card_count },
   hand,
   isMyTurn,
   totalPlayers
@@ -70,7 +90,8 @@ const updatePlayer = (
     username,
     avatar,
     player_seat,
-    totalPlayers
+    totalPlayers,
+    current
   );
 
   if (id === player_id) {
@@ -81,7 +102,15 @@ const updatePlayer = (
 
         if (isMyTurn) {
           cardDiv.addEventListener("click", () => {
-            console.log("Clicked on card", card.id);
+            fetch(`${window.location.pathname}/play`, {
+              method: "post",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ card_id: card.id }),
+            }).catch(() => {
+              /* no-op*/
+            });
           });
         }
 
@@ -102,15 +131,19 @@ const updatePlayer = (
 };
 
 const updateGame = (data) => {
-  console.log("Game data from update", data);
-
-  const { id, player_id, players, isMyTurn, hand, discard } = data;
+  const { player_id, players, isMyTurn, hand, discard } = data;
 
   if (!table.classList.contains(`player-count-${players.length}`)) {
     table.classList.add(`player-count-${players.length}`);
   }
 
   updateDiscard(discard);
+
+  if (isMyTurn) {
+    drawPile.addEventListener("click", handleDraw);
+  } else {
+    drawPile.removeEventListener("click", handleDraw);
+  }
 
   const player_seat = players.find((player) => player.id === player_id).seat;
 

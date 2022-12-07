@@ -15,17 +15,19 @@ const status = (game_id, io) => {
 };
 
 const userStatus = (game_id, player, players) => {
-  return Promise.all([
-    Games.getPlayerHand(game_id, player.id),
-    Games.getCurrentDiscard(game_id),
-  ]).then(([hand, discard]) => ({
-    id: game_id,
-    player_id: player.id,
-    players,
-    isMyTurn: player.current,
-    hand,
-    discard,
-  }));
+  return Games.getCurrentDiscard(game_id)
+    .catch(() => Promise.resolve(undefined))
+    .then((discard) =>
+      Promise.all([Games.getPlayerHand(game_id, player.id), discard])
+    )
+    .then(([hand, discard]) => ({
+      id: game_id,
+      player_id: player.id,
+      players,
+      isMyTurn: player.current,
+      hand,
+      discard,
+    }));
 };
 
 module.exports = status;

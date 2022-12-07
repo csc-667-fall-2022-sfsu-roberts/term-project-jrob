@@ -14,7 +14,6 @@ const handleLogin =
     request.session.userId = id;
     request.session.username = username;
 
-    console.log(request.session);
     response.redirect("/lobby");
   };
 

@@ -11,7 +11,7 @@ block content
       each game in games.joinable
         li
           span= game.title
-          form(action=`/api/games/${game.id}/join` method="post" target="_blank")
+          form(action=`/games/${game.id}/join` method="post" target="_blank")
             button Join game
 
     h3 Active Games
@@ -20,7 +20,7 @@ block content
         li
           a(href=`/games/${game.id}` target="_blank")= game.title
 
-    form(action="/api/games/create" method="post")
+    form(action="/games/create" method="post")
       label(for="title") Title (optional):
       input#title(type="text" name="title")
       button#create-game Create a new game

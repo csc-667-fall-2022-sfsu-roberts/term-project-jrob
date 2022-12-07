@@ -82,6 +82,14 @@ const discardCard = (game_id, card_id) =>
     { game_id, card_id }
   );
 
+const playerDiscard = (game_id, card_id, discard_id) =>
+  db
+    .none(
+      "UPDATE game_cards SET user_id=-2 WHERE game_id=${game_id} AND card_id=${discard_id}",
+      { game_id, discard_id }
+    )
+    .then(() => discardCard(game_id, card_id));
+
 const initDeck = (game_id) =>
   getCanonicalCards()
     .then((cards) => shuffle(cards))
@@ -126,6 +134,70 @@ const getCurrentDiscard = (game_id) =>
     { game_id }
   );
 
+const isUserInGame = (game_id, user_id) =>
+  db
+    .one(
+      "SELECT * FROM game_users WHERE game_id=${game_id} AND user_id=${user_id}",
+      { game_id, user_id }
+    )
+    .then(() => true)
+    .catch(() => false);
+
+const isUsersTurn = (game_id, user_id) =>
+  db
+    .one(
+      "SELECT current FROM game_users WHERE game_id=${game_id} AND user_id=${user_id}",
+      { game_id, user_id }
+    )
+    .then(({ current }) => current);
+
+const userHasCard = (game_id, user_id, card_id) =>
+  db
+    .one(
+      "SELECT * FROM game_cards WHERE game_id=${game_id} AND user_id=${user_id} AND card_id=${card_id}",
+      { game_id, user_id, card_id }
+    )
+    .then(() => true)
+    .catch(() => false);
+
+const getCard = (card_id) =>
+  db.one("SELECT * FROM cards WHERE id=${card_id}", { card_id });
+
+const setNextPlayer = (game_id, user_id) =>
+  db
+    .one(
+      "SELECT seat FROM game_users WHERE game_id=${game_id} AND user_id=${user_id}",
+      { game_id, user_id }
+    )
+    .then(({ seat }) =>
+      Promise.all([
+        db.none(
+          "UPDATE game_users SET current=false WHERE game_id=${game_id} AND user_id=${user_id}",
+          { game_id, user_id }
+        ),
+        db.none(
+          "UPDATE game_users SET current=true WHERE game_id=${game_id} AND seat=${seat}",
+          { game_id, seat: (seat + 1) % 2 } // TODO: that 2 should come from number of players in game
+        ),
+      ])
+    );
+
+const drawCard = (game_id, user_id) =>
+  db
+    .one(
+      "SELECT COUNT(*)::int FROM game_cards WHERE game_id=${game_id} AND user_id=0",
+      { game_id }
+    )
+    .then(({ count }) => {
+      if (count <= 1) {
+        // TODO shuffle discarded
+      } else {
+        return Promise.resolve();
+      }
+    })
+    .then(() => getNextDrawableCards(game_id, 1))
+    .then(([{ card_id }]) => assignCard({ game_id, user_id, card_id }));
+
 module.exports = {
   create,
   all,
@@ -139,4 +211,11 @@ module.exports = {
   setPlayerSeat,
   getPlayerHand,
   getCurrentDiscard,
+  isUserInGame,
+  isUsersTurn,
+  userHasCard,
+  getCard,
+  playerDiscard,
+  setNextPlayer,
+  drawCard,
 };
