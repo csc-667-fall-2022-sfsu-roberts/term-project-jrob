@@ -50,26 +50,6 @@ const GET_PLAYERS =
 
 const getPlayers = (game_id) => db.any(GET_PLAYERS, { game_id });
 
-const shuffle = (array) => {
-  let currentIndex = array.length,
-    randomIndex;
-
-  // While there remain elements to shuffle.
-  while (currentIndex != 0) {
-    // Pick a remaining element.
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex],
-      array[currentIndex],
-    ];
-  }
-
-  return array;
-};
-
 const getCanonicalCards = () => db.any("SELECT * FROM cards");
 const insertCard = (game_id, card_id) =>
   db.one(
@@ -90,19 +70,28 @@ const playerDiscard = (game_id, card_id, discard_id) =>
     )
     .then(() => discardCard(game_id, card_id));
 
+const initializeGameDeck = (game_id) =>
+  db.any(
+    "INSERT INTO game_cards (game_id, card_id) SELECT ${game_id} AS game_id, id AS card_id FROM cards ORDER BY random()",
+    { $game_id }
+  );
+
+const pickFirstDiscard = (game_id) =>
+  db.one(
+    "UPDATE game_cards SET user_id=-1 WHERE game_id=${game_id} AND card_id=\
+      (SELECT card_id FROM game_cards WHERE game_id=${game_id} AND card_id NOT IN \
+        (SELECT id FROM cards WHERE color = 'none') \
+      LIMIT 1)",
+    { game_id }
+  );
+
+const getAllGameCards = (game_id) =>
+  db.any("SELECT * FROM game_cards WHERE game_id=${game_id}", { game_id });
+
 const initDeck = (game_id) =>
-  getCanonicalCards()
-    .then((cards) => shuffle(cards))
-    .then((cards) => {
-      return Promise.all(cards.map(({ id }) => insertCard(game_id, id)));
-    })
-    .then((game_cards) => {
-      return Promise.all([
-        game_cards,
-        discardCard(game_id, game_cards[0].card_id),
-      ]);
-    })
-    .then(([game_cards]) => game_cards);
+  initializeGameDeck(game_id)
+    .then(() => pickFirstDiscard(game_id))
+    .then(() => getAllGameCards(game_id));
 
 const getNextDrawableCards = (game_id, limit) =>
   db.any(
